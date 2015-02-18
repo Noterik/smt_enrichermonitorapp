@@ -57,15 +57,19 @@ public class EnrichermonitorApplication extends Html5Application{
 			if(videonode!=null) {
 				String genreProprty = videonode.getProperty("genre");
 				String terms = videonode.getProperty("ThesaurusTerm");
-				
+				String title = videonode.getProperty("TitleSet_TitleSetInEnglish_title");
 				
 				terms = terms.replaceAll(","," "); //Terms can be multiple separated by comma, so replace comma with space
 				String all = genreProprty + " " + terms + " " + decade;
 
-				String body = "<input type=\"text\" value=\""+all+"\" />";
-				body += "<div>decade Filter: " + decade + "</div>";
+				String body = "<div class=\"qtitle\">Query Structure:</div>";
+				body +=	"<div class=\"rul1\">decade Filter: " + decade + "</div>";
+				body += "<div class=\"rul1\">Genre: " + genreProprty + "</div>";
+				body += "<div class=\"rul1\">Thesaurus Terms: " + terms + "</div>";
+				body += "<div class=\"rul1\"><label for=\"TitleSet_TitleSetInEnglish_title\">title:</label> " + title + "</div>";  
 				s.setContent("searchkeys", body);
 			}
+			
 			
 			String fsxml = "<fsxml><properties><keywords>"+decade+"</keywords></properties></fsxml>";
 			System.out.println("Albright search: " + url);
@@ -252,16 +256,15 @@ public class EnrichermonitorApplication extends Html5Application{
 					String genreProprty = videonode.getProperty("genre");
 					String terms = videonode.getProperty("ThesaurusTerm");
 					
-					
-					//<label for="Genre">Genre</label>
+
 					String all = genreProprty + " " + terms;
 					
-					String body = "<div class=\"rul1\">Genre: " + genreProprty + "</div>";
+					String body = "<div class=\"qtitle\">Query Structure:</div>";
+					body += "<div class=\"rul1\">Genre: " + genreProprty + "</div>";
 					body += "<div class=\"rul1\">Thesaurus Terms: " + terms + "</div>";
 					s.setContent("searchkeys", body);
 				}
-
-				
+	
 				
 				
 				System.out.println("Albright result: ");

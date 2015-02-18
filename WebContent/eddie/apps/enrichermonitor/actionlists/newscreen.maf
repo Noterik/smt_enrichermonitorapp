@@ -1,4 +1,4 @@
-setUrlTrigger(/lou/europeanademo,/lou/domain/espace/html5application/europeanasearch)
+setUrlTrigger(/lou/enrichermonitor,/lou/domain/espace/html5application/enrichermonitor)
 loadStyleSheet(screen,generic) // load the generic stylesheet
 loadContent(screen,titlepart) // load the titlepart
 setContent(screen,videoinput,"<input id="videouri" name=\"videouri\"> ")
