@@ -63,10 +63,10 @@ public class EnrichermonitorApplication extends Html5Application{
 				String all = genreProprty + " " + terms + " " + decade;
 
 				String body = "<div class=\"qtitle\">Query Structure:</div>";
-				body +=	"<div class=\"rul1\">decade Filter: " + decade + "</div>";
-				body += "<div class=\"rul1\">Genre: " + genreProprty + "</div>";
-				body += "<div class=\"rul1\">Thesaurus Terms: " + terms + "</div>";
-				body += "<div class=\"rul1\"><label for=\"TitleSet_TitleSetInEnglish_title\">title:</label> " + title + "</div>";  
+				body += "<div class=\"rul1\"><label>Theme: </label>" + genreProprty + "</div>";
+				body += "<div class=\"rul1\"><label>Topic: </label>" + terms + "</div>";
+				body += "<div class=\"rul1\"><label>Keywords from title: </label> " + title + "</div>";  
+				body += "<div class=\"rul1\"><label>Decade: </label>" + decade + "</div>";
 				s.setContent("searchkeys", body);
 			}
 			
@@ -133,7 +133,25 @@ public class EnrichermonitorApplication extends Html5Application{
 			if(result==null) { //No video
 				s.setContent("defaultoutput", "<h2>No such video</h2>");
 			} else { // Build up related result
+				String filterType = "Video";
+				if(filter.equals("ep_video")) filterType = "Video";
+				String videoPath = (String)s.getProperty("videoid");
+				FsNode videonode = Fs.getNode(videoPath);
+				if(videonode!=null) {
+					String genreProprty = videonode.getProperty("genre");
+					String terms = videonode.getProperty("ThesaurusTerm");
+					String title = videonode.getProperty("TitleSet_TitleSetInEnglish_title");
+					
+					terms = terms.replaceAll(","," "); //Terms can be multiple separated by comma, so replace comma with space
 
+					String body = "<div class=\"qtitle\">"+filterType+" query structure:</div>";
+					body += "<div class=\"rul1\"><label>Theme: </label>" + genreProprty + "</div>";
+					body += "<div class=\"rul1\"><label>Topic: </label>" + terms + "</div>";
+					body += "<div class=\"rul1\"><label>Keywords from title: </label> " + title + "</div>";  
+					s.setContent("searchkeys", body);
+					
+				}
+				
 				System.out.println("Albright result: ");
 				System.out.println(result);
 				//  result contains the <fsxml> it must be parsed
@@ -169,6 +187,7 @@ public class EnrichermonitorApplication extends Html5Application{
 				
 				s.setContent("defaultoutput", body);
 			}
+			
 		}
  	}
     
@@ -211,12 +230,8 @@ public class EnrichermonitorApplication extends Html5Application{
 					videobuild += "<p id=\"t1\">LANGUAGE</p>";
 					videobuild += "<p>"+language+"</p>";
 					videobuild += "</div>";	
-				}
-				
-				 
-				
-				
-				
+				}			
+								
 				
 				// if it's a video we need it's rawvideo node for where the file is.
 				FsNode rawvideonode = Fs.getNode(videoPath+"/rawvideo/1");
@@ -255,18 +270,30 @@ public class EnrichermonitorApplication extends Html5Application{
 				if(videonode!=null) { //Build the search terms html
 					String genreProprty = videonode.getProperty("genre");
 					String terms = videonode.getProperty("ThesaurusTerm");
-					
+					String title = videonode.getProperty("TitleSet_TitleSetInEnglish_title");
+					String split[]= title.split(" ");
+					String titleKeywords = "";
 
-					String all = genreProprty + " " + terms;
+					for(int i = 0; i < split.length; i++) {
+						String word = split[i];
+						System.out.println("Title key word: " + word + "!");
+						
+						if(word.length()>3){
+							titleKeywords += word + " ";
+						}	
+						
+					}
 					
-					String body = "<div class=\"qtitle\">Query Structure:</div>";
-					body += "<div class=\"rul1\">Genre: " + genreProprty + "</div>";
-					body += "<div class=\"rul1\">Thesaurus Terms: " + terms + "</div>";
-					s.setContent("searchkeys", body);
+					titleKeywords = titleKeywords.trim();
+						
+					String body = "<div class=\"qtitle\">Image query structure:</div>";
+					body += "<div class=\"rul1\"><label>Theme: </label>" + genreProprty + "</div>";
+					body += "<div class=\"rul1\"><label>Topic: </label>" + terms + "</div>";
+					body += "<div class=\"rul1\"><label>Keywords from title: </label> " + titleKeywords + "</div>";  
+					s.setContent("searchkeys", body);	
+					
 				}
-	
-				
-				
+
 				System.out.println("Albright result: ");
 				System.out.println(result);
 				//  result contains the <fsxml> it must be parsed
@@ -275,40 +302,45 @@ public class EnrichermonitorApplication extends Html5Application{
 				//if there's a thumbnail property in the node you can make html and show it in defaultoutput
 				
 				System.out.println("NDOE SIZE DIVCODE="+nodes.size());
-				// Loop through all the nodes
-				// Available properties are :
-				/*
-				 * title
-				 * url
-				 * creator
-				 * thumbnail
-				 * provider
-				 */
-				String body = "<div id=\"slider1\">"
-						+ "<a class=\"buttons prev\" href=\"#\">&#60;</a>"
-						+ "<div class=\"viewport\">"
-						+ "<ul class=\"overview\">";
-
-				for(Iterator<FsNode> iter = nodes.getNodes().iterator() ; iter.hasNext(); ) {
-					FsNode n = (FsNode)iter.next(); 
-					//body += "<div class='item'>";
-					String thumbnail = n.getProperty("thumbnail");
-					String objurl = n.getProperty("url");
-					
-					if(thumbnail!=null) { // Check if there is a thumbnail
-						//body += "<a href='" + objurl + "' target=\"_blank\">";
-						body += "<li><img src=\""+thumbnail+"\"></li>";
-
-						//body += "<img src='" + thumbnail + "' />";
-						//body += "</a>";
+				if(nodes.size()>0) {
+					// Loop through all the nodes
+					// Available properties are :
+					/*
+					 * title
+					 * url
+					 * creator
+					 * thumbnail
+					 * provider
+					 */
+					String body = "<div id=\"slider1\">"
+							+ "<a class=\"buttons prev\" href=\"#\">&#60;</a>"
+							+ "<div class=\"viewport\">"
+							+ "<ul class=\"overview\">";
+	
+					for(Iterator<FsNode> iter = nodes.getNodes().iterator() ; iter.hasNext(); ) {
+						FsNode n = (FsNode)iter.next(); 
+						//body += "<div class='item'>";
+						String thumbnail = n.getProperty("thumbnail");
+						String objurl = n.getProperty("url");
+						
+						if(thumbnail!=null) { // Check if there is a thumbnail
+							//body += "<a href='" + objurl + "' target=\"_blank\">";
+							body += "<li><img src=\""+thumbnail+"\"></li>";
+	
+							//body += "<img src='" + thumbnail + "' />";
+							//body += "</a>";
+						}
+					   //body += "</div>";
 					}
-				   //body += "</div>";
+					body += "</ul>" 
+							+"</div>"
+							+ "<a class=\"buttons next\" href=\"#\">&#62;</a>" 
+							+ "</div>";
+					s.setContent("defaultoutput", body);
+				} else {
+					s.setContent("defaultoutput", "<h2>No related items</h2>");
 				}
-				body += "</ul>" 
-						+"</div>"
-						+ "<a class=\"buttons next\" href=\"#\">&#62;</a>" 
-						+ "</div>";
-				s.setContent("defaultoutput", body);
+				
 			}
 		}
 	}

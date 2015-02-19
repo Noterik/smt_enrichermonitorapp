@@ -146,7 +146,7 @@ table td, table th{
 #t1 {
 	font-family: "Proxima Nova",Helvetica,Arial,sans-serif;
 	color: #79BD9A;
-	font-size: 12px;
+	font-size: 15px;
 	font-weight: bold;
 }
 
@@ -326,5 +326,13 @@ ul li .image{
 	text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.3), 0px -1px 0px rgba(0, 0, 0, 0.7);
 }
 
-
+#defaultoutput>h2 {
+	text-align: center;
+	font-family: "Trebuchet MS",Helvetica,sans-serif;
+	font-size: 31px;
+	text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.3), 0px -1px 0px rgba(0, 0, 0, 0.7);
+	color: #3B5957;
+	margin-top: 128px;
+	margin-bottom: 60px;
+}
 
